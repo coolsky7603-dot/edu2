@@ -1,25 +1,134 @@
 <!doctype html>
 <html lang="ko">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>국방예산 인사이트 · 2027</title><link rel="stylesheet" href="styles.css"></head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="출장 일정과 교통비, 숙박비로 국가공무원 국내 출장여비를 계산합니다.">
+  <title>출장여비 계산기</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="calculator.js"></script>
+  <script defer src="vendor/jszip.min.js"></script>
+  <script defer src="excel-export.js"></script>
+  <script defer src="app.js"></script>
+</head>
 <body>
-<header class="masthead"><a class="brand" href="#">B<span>↗</span> <span>Budget lens<small>국방예산 인사이트</small></span></a><div class="header-right"><span class="live-dot"></span>2027 정부안 <span class="divider">/</span> 2026 비교 분석</div></header>
-<div class="layout">
-<aside><div class="aside-top"><span class="eyebrow">EXPLORE THE BUDGET</span><h2>예산 살펴보기</h2><p>궁금한 부문과 회계를 선택하세요.</p></div><form id="filters"><label for="sector">부문</label><select id="sector"><option value="">전체 부문</option></select><label for="account">회계구분</label><select id="account"><option value="">전체 회계</option></select><label for="search">프로그램 검색</label><div class="searchbox"><span>⌕</span><input id="search" type="search" placeholder="프로그램명 또는 구분"></div><button type="reset" class="reset">↺ 필터 초기화</button></form><div class="filter-summary"><span class="live-dot"></span><span id="selection">전체 부문 · 전체 회계</span></div><div class="aside-note"><div class="note-icon">i</div><strong>숫자 읽는 법</strong><p>모든 금액은 <b>억 원</b> 단위입니다.<br>증감률은 2026년 대비 변화입니다.</p><p>차감 항목은 합계에 음수로 반영하고, 구성비 그래프에서는 제외합니다.</p></div><div class="source-label">DATA SOURCE<br><strong>국방예산 정부안 · 붙임1</strong><span>프로그램별 재원 / 32개 항목</span></div></aside>
-<main>
-<section class="intro"><div><div class="eyebrow">DEFENSE BUDGET / 2027</div><h1>예산의 흐름을,<br><span>한눈에 더 선명하게.</span></h1><p>부문에서 프로그램까지, 국방예산의 규모와 변화를 살펴보세요.</p></div><div class="year-art" aria-hidden="true"><span>20</span><b>27</b><i>↗</i><small>GOVERNMENT PROPOSAL</small></div></section>
-<div class="scope-row"><span id="scope">전체 재원 분석</span><span><b id="count">32</b>개 항목 · <span id="activeYear">2027년</span> 중심</span></div>
-<section class="kpis" aria-label="예산 요약"><article class="kpi lavender"><span>2026년 예산</span><strong id="total26">-</strong><small>비교 기준 연도</small></article><article class="kpi blue"><span>2027년 정부안</span><strong id="total27">-</strong><small>차감 항목을 반영한 순액</small></article><article class="kpi peach"><span>전년 대비 증감</span><strong id="delta">-</strong><small id="deltaCaption">-</small></article><article class="kpi lime"><span>예산 증감률</span><strong id="rate">-</strong><small>(2027년 − 2026년) ÷ 2026년</small></article></section>
-<div id="empty" class="empty" hidden>선택한 조건에 맞는 항목이 없습니다. 필터나 검색어를 변경해 주세요.</div>
-<section class="charts" id="charts">
-<article class="card span7"><div class="card-head"><div><span class="eyebrow">01 / SECTOR COMPARISON</span><h2>어느 부문에 얼마나 쓰일까?</h2><p>부문별 예산 비교 · 차감 반영 순액</p></div><span class="pill">억 원</span></div><div id="sectorChart" class="chart"></div><div class="legend"><span><i style="background:#B8A4FF"></i>2026년</span><span><i style="background:#5078F4"></i>2027년</span></div></article>
-<article class="card span5"><div class="card-head"><div><span class="eyebrow">02 / FUNDING MIX</span><h2>재원은 어디에서?</h2><p>2027년 회계구분별 구성 · 양수 금액</p></div></div><div id="donutChart" class="chart donut"></div></article>
-<article class="card span6"><div class="card-head"><div><span class="eyebrow">03 / PROGRAM RANKING</span><h2>예산 규모 TOP 8</h2><p>2027년 프로그램별 예산</p></div><span class="pill">억 원</span></div><div id="rankingChart" class="chart"></div></article>
-<article class="card span6"><div class="card-head"><div><span class="eyebrow">04 / CHANGE DRIVERS</span><h2>무엇이 달라졌을까?</h2><p>절대 증감액이 큰 8개 항목 · 차감 포함</p></div><span class="pill">억 원</span></div><div id="changeChart" class="chart"></div><div class="legend"><span><i style="background:#F394AF"></i>감소</span><span><i style="background:#17B7A2"></i>증가</span></div></article>
-<article class="card span7"><div class="card-head"><div><span class="eyebrow">05 / PROGRAM MAP</span><h2>예산의 크기를 펼쳐보면</h2><p>2027년 프로그램별 면적 비교 · 양수 금액</p></div></div><div id="treemapChart" class="chart treemap"></div></article>
-<article class="card span5"><div class="card-head"><div><span class="eyebrow">06 / CATEGORY CHANGE</span><h2>구분별 예산의 이동</h2><p>2026년 → 2027년 · 차감 항목 제외</p></div><span class="pill">억 원</span></div><div id="slopeChart" class="chart"></div></article>
-<article class="card span7"><div class="card-head"><div><span class="eyebrow">07 / GROWTH LANDSCAPE</span><h2>규모와 성장, 함께 보기</h2><p>가로: 2027년 예산 · 세로: 증감률 · 원: 프로그램</p></div></div><div id="scatterChart" class="chart"></div><div class="legend sector-legend"></div></article>
-<article class="card span5"><div class="card-head"><div><span class="eyebrow">08 / ALLOCATION MATRIX</span><h2>부문 × 회계 한눈에</h2><p>2027년 예산 · 음수는 차감액</p></div></div><div id="heatmapChart" class="chart heatmap"></div></article>
-</section>
-<section class="card data-card"><div class="card-head"><div><span class="eyebrow">THE DETAILS</span><h2>프로그램별 상세 내역 <span id="tableCount" class="pill"></span></h2><p>열 제목을 누르면 정렬됩니다. 금액 단위: 억 원</p></div><button id="download" class="download">↓ CSV 내려받기</button></div><div class="table-wrap"><table id="details"><thead><tr><th data-key="sector" scope="col">부문 ↕</th><th data-key="account" scope="col">회계구분 ↕</th><th data-key="category" scope="col">구분 ↕</th><th data-key="program" scope="col">프로그램명 ↕</th><th data-key="y2026" scope="col" class="num">2026년 ↕</th><th data-key="y2027" scope="col" class="num">2027년 ↕</th><th data-key="delta" scope="col" class="num">증감 ↕</th><th data-key="rate" scope="col" class="num">증감률 ↕</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div></section>
-<footer><strong>Budget lens</strong><span>출처: 프로그램별_재원.xlsx · 2027년은 정부안<br>표에 표시된 억 원 단위 금액으로 계산하므로 원문 증감률과 반올림 차이가 있을 수 있습니다.</span></footer>
-</main></div><div id="tooltip" role="tooltip"></div><script src="data.js"></script><script src="app.js"></script></body></html>
+  <header class="top"><div class="shell top-inner"><span class="brand-mark" aria-hidden="true">₩</span><span>출장여비 계산기</span><span class="top-scope">국가공무원 · 국내 출장</span></div></header>
+  <main class="shell">
+    <div class="intro">
+      <img class="intro-photo" src="assets/desk-banner.png" alt="">
+      <div class="intro-content">
+        <h1>출장여비 계산기</h1>
+        <p>출장 일정과 지출 내역을 입력해 예상 지급액을 확인하세요.</p>
+        <button id="open-help" class="help-button" type="button" aria-haspopup="dialog" aria-controls="help-dialog">사용보기</button>
+      </div>
+    </div>
+    <dialog id="help-dialog" aria-labelledby="help-title">
+      <h2 id="help-title">출장여비 계산기 사용방법</h2>
+      <ol>
+        <li><strong>출장 일정 입력</strong> — 출발일과 복귀일을 입력하면 기본 일비와 식비가 표시됩니다.</li>
+        <li><strong>출장 조건 선택</strong> — 출장 유형과 차량 이용 여부를 선택합니다. 근무지 내 출장은 실제 출장시간을 입력합니다.</li>
+        <li><strong>비용 입력</strong> — 근무지 밖 출장은 교통비와 숙박비를 입력하고, 해당하는 숙박 지역과 조건을 선택합니다. 예상액은 입력할 때마다 갱신됩니다.</li>
+        <li><strong>결과 저장</strong> — 계산 내역에서 <strong>계산 결과 인쇄</strong>를 누르면 인쇄하거나 PDF로 저장할 수 있고, <strong>엑셀자료</strong>를 누르면 엑셀 파일을 내려받을 수 있습니다.</li>
+      </ol>
+      <form method="dialog" class="help-close">
+        <button class="help-button" type="submit" autofocus>닫기</button>
+      </form>
+    </dialog>
+    <div class="layout">
+      <form id="trip-form" novalidate>
+        <section class="card" aria-labelledby="dates-title">
+          <h2 id="dates-title" class="section-title"><span class="section-icon calendar-icon" aria-hidden="true"></span>출장 일정</h2>
+          <div class="fields">
+            <label>출발일<input id="start" name="start" type="date" required></label>
+            <label>복귀일<input id="end" name="end" type="date" required></label>
+          </div>
+          <p id="date-error" class="error" role="alert" hidden></p>
+        </section>
+        <section class="card" aria-labelledby="conditions-title">
+          <h2 id="conditions-title" class="section-title"><span class="section-icon options-icon" aria-hidden="true"></span>출장 조건</h2>
+          <div class="fields">
+            <label>출장 유형<select id="trip-type" name="tripType"><option value="outside">근무지 밖 국내 출장</option><option value="inside">근무지 내 국내 출장</option></select></label>
+            <label>차량 이용<select id="vehicle" name="vehicle"><option value="none">감액 대상 아님</option><option value="official">공무용 차량 이용 등 감액 대상</option><option value="assigned" hidden disabled>전용 차량 배정자</option></select></label>
+          </div>
+          <div id="inside-fields" hidden>
+            <div class="fields extra">
+              <label>출장시간 (시간)<input name="hours" type="number" min="0" max="23" step="1" inputmode="numeric" placeholder="0"></label>
+              <label>출장시간 (분)<input name="minutes" type="number" min="0" max="59" step="1" inputmode="numeric" placeholder="0"></label>
+            </div>
+            <p class="hint">근무지 내 출장은 1회 출장 기준으로 계산합니다. 일반적으로 같은 시·군·섬 내 또는 여행거리 12km 미만인 출장입니다. 지역별 특례는 제18조를 확인하세요.</p>
+          </div>
+          <div id="outside-conditions" class="fields extra">
+            <label>여비 지급 구분<select id="grade" name="grade"><option value="second">제2호</option><option value="first">제1호</option></select></label>
+            <label>교통수단<select id="transport-mode" name="transportMode"><option value="land">철도·버스·자동차 등</option><option value="water-air">선박·항공</option></select></label>
+          </div>
+          <div id="official-fields" class="fields extra" hidden>
+            <label>첫 감액 적용일<input name="reducedStart" type="date"></label>
+            <label>마지막 감액 적용일<input name="reducedEnd" type="date"></label>
+          </div>
+          <p id="official-hint" class="hint" hidden>감액 날짜를 비워 두면 전체 출장일에 적용합니다. 일부 날짜에만 적용할 경우 연속된 기간을 입력하세요.</p>
+          <p id="outside-hint" class="hint">지급 구분은 별표 1 기준입니다. 철도는 제1호 특실·제2호 일반실, 선박은 제1호 1등급·제2호 2등급 기준으로 운임을 입력하세요.</p>
+        </section>
+        <section class="card" id="expense-fields" aria-labelledby="expense-title">
+          <h2 id="expense-title" class="section-title"><span class="section-icon receipt-icon" aria-hidden="true"></span>교통비와 숙박비</h2>
+          <div class="fields">
+            <label><span id="fare-label">교통비 합계 (원)</span><input name="fare" type="number" min="0" max="999999999" step="1" inputmode="numeric" placeholder="0"></label>
+            <label>숙박비 합계 (원)<input name="lodging" type="number" min="0" max="999999999" step="1" inputmode="numeric" placeholder="0"></label>
+            <label>실제 숙박 횟수<input name="nights" type="number" min="0" step="1" inputmode="numeric" placeholder="미입력 시 일정 기준"></label>
+            <label id="region-field">숙박 지역<select name="region"><option value="other">그 밖의 지역 · 7만원</option><option value="seoul">서울특별시 · 10만원</option><option value="metro">광역시 · 8만원</option></select></label>
+          </div>
+          <div id="water-air-fields" class="fields extra" hidden>
+            <label>별도 식비가 필요한 일수<input name="mealDays" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></label>
+            <label class="check"><input name="necessaryLodging" type="checkbox">부득이한 육지 숙박이 필요했음</label>
+          </div>
+          <p id="expense-hint" class="hint">공용 교통수단 운임은 제외하고, 자가용은 철도·버스 기준액 또는 부득이한 경우 인정되는 연료비·통행료 등을 입력하세요. 숙박비는 한 지역에서 1박 요금이 같은 경우를 기준으로 계산합니다.</p>
+          <details>
+            <summary>추가 지급·장기 체재 조건</summary>
+            <label id="uplift-field" class="check"><input name="lodgingUplift" type="checkbox">부득이한 숙박비 상한 초과분 추가 지급 적용 (상한의 30% 이내)</label>
+            <label class="check"><input name="longStay" type="checkbox">출장 기간 내내 같은 곳에 체재 (다른 지역 출장 없음)</label>
+            <p class="hint">장기 체재는 출발일에 체재지에 도착한 것으로 계산합니다. 장기 체재와 차량 감액이 겹치는 날은 장기 체재 일비의 절반을 적용합니다.</p>
+          </details>
+        </section>
+        <p id="input-error" class="error" role="alert" hidden></p>
+      </form>
+      <aside class="results" aria-labelledby="result-title">
+        <div class="total-card" aria-live="polite">
+          <h2 id="result-title">예상 출장여비</h2>
+          <p class="total" id="total">—</p>
+          <p class="total-note" id="status">출발일과 복귀일을 입력하세요.</p>
+        </div>
+        <section class="card breakdown" aria-labelledby="breakdown-title">
+          <h2 id="breakdown-title" class="section-title"><span class="section-icon receipt-icon" aria-hidden="true"></span>계산 내역</h2>
+          <dl id="print-details" class="print-only">
+            <div><dt>출장 기간</dt><dd id="print-dates"></dd></div>
+            <div><dt>출장 유형</dt><dd id="print-trip-type"></dd></div>
+            <div><dt>차량 이용</dt><dd id="print-vehicle"></dd></div>
+            <div id="print-duration-row" hidden><dt>출장시간</dt><dd id="print-duration"></dd></div>
+            <div id="print-grade-row"><dt>여비 지급 구분</dt><dd id="print-grade"></dd></div>
+            <div id="print-transport-row"><dt>교통수단</dt><dd id="print-transport"></dd></div>
+            <div id="print-lodging-row" hidden><dt>숙박비 입력액</dt><dd id="print-lodging"></dd></div>
+          </dl>
+          <dl id="amounts">
+            <div><dt id="daily-label">일비</dt><dd id="daily">—</dd></div>
+            <div class="outside-row"><dt>식비</dt><dd id="meals">—</dd></div>
+            <div class="outside-row"><dt>교통비</dt><dd id="fare-out">—</dd></div>
+            <div class="outside-row"><dt>숙박비</dt><dd id="lodging-out">—</dd></div>
+          </dl>
+          <p id="adjustment" class="hint" hidden></p>
+          <div class="result-actions">
+            <button id="print-result" type="button" disabled>계산 결과 인쇄</button>
+            <button id="export-result" type="button" disabled>엑셀자료</button>
+          </div>
+          <p id="export-error" class="error" role="alert" hidden></p>
+        </section>
+      </aside>
+    </div>
+    <footer class="shell-footer">
+      <details>
+        <summary>계산 근거와 적용 범위</summary>
+        <p>공무원 여비 규정(대통령령 제36728호, 2026. 10. 2. 시행) 제4·5조, 제15~18조, 별표 2 국내 여비 지급표, 제16조 제3항~제5항 발췌를 참고했습니다.</p>
+        <p>국내 출장 표준 기준으로 계산합니다. 공적 항공마일리지 추가 일비, 대통령·국무총리의 실비 특례 및 기관별 특례는 별도 확인이 필요합니다. 부득이한 숙박비 초과 지급은 증빙을 갖춰 출장 종료 다음 날부터 1주일 이내에 신청하는 조건입니다.</p>
+      </details>
+    </footer>
+  </main>
+</body>
+</html>
